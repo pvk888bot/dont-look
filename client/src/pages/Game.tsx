@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { playSound, LEVELS, type SoundLevel } from "@/lib/audio";
+import { playSound, stopSound, LEVELS, type SoundLevel } from "@/lib/audio";
 import { useLocation } from "wouter";
 
 const WRONG_FEEDBACK = [
@@ -32,8 +32,15 @@ export default function Game() {
     setInputValue("");
     setFeedback(null);
     setFeedbackType("neutral");
-    // Auto-focus input on level load? Maybe not, let user choose play first.
+    stopSound(); // Ensure sound stops when moving to next level
   }, [levelIndex]);
+
+  // Stop sound when user starts typing
+  useEffect(() => {
+    if (inputValue.length > 0) {
+      stopSound();
+    }
+  }, [inputValue]);
 
   const handlePlaySound = async () => {
     if (isPlaying) return;
@@ -49,12 +56,13 @@ export default function Game() {
     } finally {
       setIsPlaying(false);
       setFeedback(null);
-      // Focus input after sound ends
+      // Focus input after sound ends or is stopped
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
 
   const checkAnswer = () => {
+    stopSound(); // Stop sound immediately on submit
     if (!inputValue.trim()) return;
 
     const guess = inputValue.toLowerCase().trim().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"");

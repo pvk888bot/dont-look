@@ -60,8 +60,18 @@ export const LEVELS: SoundLevel[] = [
 ];
 
 let audioCtx: AudioContext | null = null;
+let currentSource: AudioBufferSourceNode | null = null;
+
+export const stopSound = () => {
+  if (currentSource) {
+    currentSource.stop();
+    currentSource = null;
+  }
+};
 
 export const playSound = async (level: SoundLevel): Promise<void> => {
+  stopSound(); // Stop any currently playing sound
+
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
   }
@@ -77,9 +87,22 @@ export const playSound = async (level: SoundLevel): Promise<void> => {
   const source = audioCtx.createBufferSource();
   source.buffer = audioBuffer;
   source.connect(audioCtx.destination);
+  
+  currentSource = source;
   source.start(0);
 
+  // Stop after 5 seconds if it's still playing
+  const timer = setTimeout(() => {
+    if (currentSource === source) {
+      stopSound();
+    }
+  }, 5000);
+
   return new Promise((resolve) => {
-    source.onended = () => resolve();
+    source.onended = () => {
+      clearTimeout(timer);
+      if (currentSource === source) currentSource = null;
+      resolve();
+    };
   });
 };
