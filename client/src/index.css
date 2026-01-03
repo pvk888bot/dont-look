@@ -9,8 +9,8 @@
 }
 
 @theme inline {
-  --font-mono: "PhilFaded", serif;
-  --font-distressed: "Special Elite", cursive;
+  --font-mono: "Playfair Display", serif;
+  --font-distressed: "PhilFaded", cursive;
 
   --color-background: hsl(0 0% 90%); /* Neutral Light Gray */
   --color-foreground: hsl(0 0% 10%); /* Near Black */
