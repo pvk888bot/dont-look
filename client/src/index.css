@@ -1,8 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "PhilFaded";
+  src: url("@assets/PhilFaded_(1)_1767455063407.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @theme inline {
-  --font-mono: "Cormorant Garamond", serif;
+  --font-mono: "PhilFaded", serif;
   --font-distressed: "Special Elite", cursive;
 
   --color-background: hsl(0 0% 90%); /* Neutral Light Gray */
