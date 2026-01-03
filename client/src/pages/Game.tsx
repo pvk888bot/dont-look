@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { playSound, stopSound, LEVELS, type SoundLevel } from "@/lib/audio";
+import { playSound, stopSound, getAudioCtx, LEVELS, type SoundLevel } from "@/lib/audio";
 import { useLocation } from "wouter";
 
 const WRONG_FEEDBACK = [
@@ -44,6 +44,12 @@ export default function Game() {
 
   const handlePlaySound = async () => {
     if (isPlaying) return;
+    
+    // Explicitly resume AudioContext on user interaction for mobile
+    const ctx = getAudioCtx();
+    if (ctx && ctx.state === 'suspended') {
+      await ctx.resume();
+    }
     
     setIsPlaying(true);
     setFeedback("Listening...");

@@ -62,6 +62,14 @@ let audioCtx: AudioContext | null = null;
 let currentSource: AudioBufferSourceNode | null = null;
 let currentNodes: AudioNode[] = [];
 
+// Export audioCtx for Game.tsx to resume on interaction
+export const getAudioCtx = () => {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return audioCtx;
+};
+
 export const stopSound = () => {
   if (currentSource) {
     try { currentSource.stop(); } catch(e) {}
@@ -76,42 +84,37 @@ export const stopSound = () => {
 export const playSound = async (level: SoundLevel): Promise<void> => {
   stopSound();
 
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-  }
+  const ctx = getAudioCtx();
   
-  if (audioCtx.state === 'suspended') {
-    await audioCtx.resume();
+  // Resume context if suspended (browser policy)
+  if (ctx.state === 'suspended') {
+    await ctx.resume();
   }
 
   const response = await fetch(level.url);
   const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
-  const now = audioCtx.currentTime;
+  const now = ctx.currentTime;
   
   // Dynamic difficulty scaling based on Level (1-8)
-  // Level 1 is clear (volume 0.5, duration 5s)
-  // Level 8 is obscured (volume 0.1, duration 2s)
   const volume = Math.max(0.1, 0.5 - (level.id * 0.05));
   const duration = Math.max(2, 6 - (level.id * 0.5));
 
-  const masterGain = audioCtx.createGain();
+  const masterGain = ctx.createGain();
   masterGain.gain.setValueAtTime(volume, now);
   masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-  masterGain.connect(audioCtx.destination);
+  masterGain.connect(ctx.destination);
   currentNodes.push(masterGain);
 
-  // Filter to obscure higher levels
-  const filter = audioCtx.createBiquadFilter();
+  const filter = ctx.createBiquadFilter();
   filter.type = "lowpass";
-  // Filter frequency drops as levels get harder to "muffle" the sound
   const filterFreq = Math.max(400, 20000 - (level.id * 2400));
   filter.frequency.setValueAtTime(filterFreq, now);
   filter.connect(masterGain);
   currentNodes.push(filter);
 
-  const source = audioCtx.createBufferSource();
+  const source = ctx.createBufferSource();
   source.buffer = audioBuffer;
   source.connect(filter);
   
