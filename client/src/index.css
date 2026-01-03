@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 @theme inline {
-  --font-mono: "Geist Mono", monospace;
+  --font-mono: "Cormorant Garamond", serif;
   --font-distressed: "Special Elite", cursive;
 
   --color-background: hsl(0 0% 90%); /* Neutral Light Gray */
