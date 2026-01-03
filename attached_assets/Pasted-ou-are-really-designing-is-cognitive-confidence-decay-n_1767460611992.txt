@@ -1,0 +1,251 @@
+ou are really designing is cognitive confidence decay, not difficulty in the traditional sense. I’ll map sounds to how the brain fails, not just what the sound is.
+
+I’ll give you concrete sound examples per level, plus why they work psychologically. You can swap specifics later, but the structure should stay.
+
+Level 1
+
+Easy. Immediate recognition. No doubt. Engagement hook.
+
+Goal:
+Instant “I get it” moment. Train the user to trust their ears.
+
+Best sounds
+
+Dog barking
+
+Cat meowing
+
+Door knock
+
+Phone vibration on table
+
+Baby crying
+
+Why these work
+
+Single source
+
+Clear attack and decay
+
+No ambiguity
+
+Universal exposure
+
+If someone misses Level 1, they assume they messed up, not the game. That’s important.
+
+Level 2
+
+Familiar, but requires a second of thought
+
+Goal:
+Introduce delay without frustration.
+
+Best sounds
+
+Keys jingling
+
+Zipper opening or closing
+
+Keyboard typing
+
+Pouring water into a glass
+
+Microwave beep sequence
+
+Why
+
+Still common
+
+But multiple interpretations exist for a split second
+
+Recognition comes after replay
+
+This is where the player leans forward for the first time.
+
+Level 3
+
+Sounds familiar, but not immediately placeable
+
+Goal:
+“I know this… why can’t I name it?”
+
+Best sounds
+
+Kettle whistle starting then stopping
+
+Toilet tank refilling
+
+Vacuum cleaner from another room
+
+Radiator hissing
+
+Elevator doors closing
+
+Why
+
+Often heard passively
+
+Rarely named explicitly
+
+Brain recognizes the situation, not the object
+
+This is the first crack in confidence.
+
+Level 4
+
+Don’t know the sound at first. Requires repetition. Eventually clicks.
+
+Goal:
+Delayed recognition reward.
+
+Best sounds
+
+Crosswalk pedestrian signal
+
+Subway arrival chime
+
+Printer starting up
+
+Ice maker dropping cubes
+
+Seatbelt warning chime
+
+Why
+
+Familiar but context dependent
+
+Removed from visual cues
+
+The “aha” comes only after isolation
+
+This is where headphones start to matter.
+
+Level 5
+
+What sound is this? Difficult but solvable.
+
+Goal:
+Force analytical listening instead of intuition.
+
+Best sounds
+
+Velcro ripping
+
+Tape peeling
+
+Marker on paper
+
+Plastic bag crinkling slowly
+
+Leather creaking
+
+Why
+
+Material based sounds
+
+No obvious environment
+
+Player must identify texture, not object
+
+People replay these several times before committing.
+
+Level 6
+
+I don’t know this sound, but I think I’ve heard it before
+
+Goal:
+Nostalgia without clarity.
+
+Best sounds
+
+Cassette tape rewinding
+
+Polaroid photo ejecting
+
+Film camera advance lever
+
+Typewriter carriage return
+
+Payphone keypad tones
+
+Why
+
+Age and cultural exposure dependent
+
+Memory based recognition
+
+Younger players feel alienated, older players feel haunted
+
+This is a very strong Vedome level.
+
+Level 7
+
+I don’t think I’ve ever heard this sound before
+
+Goal:
+Break trust in the listener’s lived experience.
+
+Best sounds
+
+Old dot matrix printer head moving
+
+Fax machine handshake tones
+
+Mechanical slide projector advancing
+
+Pneumatic tube dispatch
+
+CRT TV degauss hum
+
+Why
+
+Obsolete or invisible tech
+
+Not part of daily life
+
+Feels archival, institutional, forgotten
+
+At this point, players start doubting their own memory.
+
+Level 8
+
+I don’t know. Full stop.
+
+Goal:
+Existential uncertainty.
+
+Best sounds
+These should still be real, never abstract synths.
+
+Reversed zipper
+
+Slowed bicycle bell
+
+Time stretched bouncing ball
+
+Layered mechanical hum with phase shift
+
+Real sound slowed until identity collapses
+
+Why
+
+Recognition fails completely
+
+Brain searches for pattern that no longer exists
+
+Feels alien but grounded
+
+Important: Level 8 should never feel fake.
+It should feel real but unrecognizable.
+
+Critical rule across all levels
+
+Every sound must have:
+
+A single true answer
+
+Multiple near misses
+
+At least one answer that feels insulting when rejected
+
+That tension is the game.
