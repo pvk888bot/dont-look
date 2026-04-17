@@ -7,7 +7,7 @@
 <style>
   @font-face {
     font-family: "PhilFaded";
-    src: url("__WIX_URL_FONT__") format("woff2");
+    src: url("https://raw.githubusercontent.com/pvk888bot/dont-look/main/attached_assets/PhilFaded_%281%29_1767455063407.ttf") format("truetype");
     font-display: swap;
   }
   html, body { margin: 0; padding: 0; background: #fff; }
@@ -132,14 +132,14 @@
   "use strict";
 
   var LEVELS = [
-    { id: 1, answers: ["dog","bark","barking","hound","animal"],               url: "__WIX_URL_1__" },
-    { id: 2, answers: ["typing","typewriter","keyboard","keys","writing"],     url: "__WIX_URL_2__" },
-    { id: 3, answers: ["water","drip","dripping","leak","sink","tap"],         url: "__WIX_URL_3__" },
-    { id: 4, answers: ["printer","printing","startup","office","inkjet"],      url: "__WIX_URL_4__" },
-    { id: 5, answers: ["static","radio","noise","interference","tuning"],      url: "__WIX_URL_5__" },
-    { id: 6, answers: ["subway","train","metro","underground","transit"],      url: "__WIX_URL_6__" },
-    { id: 7, answers: ["washer","washing machine","dishwasher","laundry","cycle"], url: "__WIX_URL_7__" },
-    { id: 8, answers: ["jet","plane","airplane","engine","flight","takeoff"],  url: "__WIX_URL_8__" }
+    { id: 1, answers: ["dog","bark","barking","hound","animal"],               url: "https://static.wixstatic.com/mp3/035362_62cf54b6e5f349138e43e15f54dcd420.mp3" },
+    { id: 2, answers: ["typing","typewriter","keyboard","keys","writing"],     url: "https://static.wixstatic.com/mp3/035362_7190c5bbaf9f4c4388c57b43bb9e7ba9.mp3" },
+    { id: 3, answers: ["water","drip","dripping","leak","sink","tap"],         url: "https://static.wixstatic.com/mp3/035362_2453ea46b8b84702bf9d9cabcb1de965.mp3" },
+    { id: 4, answers: ["printer","printing","startup","office","inkjet"],      url: "https://static.wixstatic.com/mp3/035362_d9ac00427ee7400981cf19f40e90c7d9.mp3" },
+    { id: 5, answers: ["static","radio","noise","interference","tuning"],      url: "https://static.wixstatic.com/mp3/035362_93458e138c9c45a59da1f20e68d3266d.mp3" },
+    { id: 6, answers: ["subway","train","metro","underground","transit"],      url: "https://static.wixstatic.com/mp3/035362_050b1b2023cb4954bd819b8bf70764fc.mp3" },
+    { id: 7, answers: ["washer","washing machine","dishwasher","laundry","cycle"], url: "https://static.wixstatic.com/mp3/035362_d9470277b3aa484b80c808a8614c1dcb.mp3" },
+    { id: 8, answers: ["jet","plane","airplane","engine","flight","takeoff"],  url: "https://static.wixstatic.com/mp3/035362_fa6e26bc6b4d4e4fbf4245bf5d32b0b1.mp3" }
   ];
 
   var WRONG_FEEDBACK = [
@@ -181,10 +181,7 @@
     if (i + 1 < LEVELS.length) prefetch(LEVELS[i + 1]);
   }
 
-  function getCtx() {
-    if (!ctx) ctx = new AC();
-    return ctx;
-  }
+  function getCtx() { if (!ctx) ctx = new AC(); return ctx; }
 
   function prefetch(level) {
     if (bufferCache.has(level.id) || inflight.has(level.id)) return;
