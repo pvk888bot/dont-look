@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Don't Look</title>
+<style>
+  @font-face {
+    font-family: "PhilFaded";
+    src: url("__WIX_URL_FONT__") format("woff2");
+    font-display: swap;
+  }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body {
+    font-family: "PhilFaded", system-ui, sans-serif;
+    color: #111;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    position: relative;
+    width: min(90vw, 420px);
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgba(17,17,17,0.2);
+    background: #fff;
+    padding: 3rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 500ms ease;
+  }
+  .card.success { background: rgba(0,143,40,0.06); }
+  .flash {
+    position: absolute;
+    inset: 0;
+    background: #008F28;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
+  .card.success .flash { opacity: 0.2; }
+  .stack {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid #111;
+    background: transparent;
+    color: #111;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: background-color 150ms, color 150ms, opacity 150ms;
+  }
+  button:hover:not(:disabled) { background: #111; color: #fff; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.submit { background: #111; color: #fff; padding: 0.5rem 2rem; }
+  button.submit:hover { background: #333; }
+  .input-wrap { width: 100%; position: relative; }
+  input[type=text] {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    background: #fff;
+    padding: 0.75rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 150ms;
+  }
+  input[type=text]:focus { border-color: #111; }
+  input[type=text]::placeholder {
+    color: #aaa;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  .feedback {
+    height: 1.5rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  .feedback.show { opacity: 1; transform: translateY(0); }
+  .feedback.neutral { color: #999; }
+  .feedback.error { color: #666; }
+  .feedback.success { color: #008F28; font-weight: bold; }
+  .level {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 0.625rem;
+    color: #aaa;
+    letter-spacing: 0.2em;
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="flash"></div>
+    <div class="stack">
+      <button id="play" type="button">Play sound</button>
+      <div class="input-wrap">
+        <input id="guess" type="text" placeholder="Type what you heard" autocomplete="off" spellcheck="false">
+        <div class="feedback" id="feedback"></div>
+      </div>
+      <button id="submit" class="submit" type="button">Submit</button>
+    </div>
+    <div class="level" id="level">LEVEL 1 / 8</div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LEVELS = [
+    { id: 1, answers: ["dog","bark","barking","hound","animal"],               url: "__WIX_URL_1__" },
+    { id: 2, answers: ["typing","typewriter","keyboard","keys","writing"],     url: "__WIX_URL_2__" },
+    { id: 3, answers: ["water","drip","dripping","leak","sink","tap"],         url: "__WIX_URL_3__" },
+    { id: 4, answers: ["printer","printing","startup","office","inkjet"],      url: "__WIX_URL_4__" },
+    { id: 5, answers: ["static","radio","noise","interference","tuning"],      url: "__WIX_URL_5__" },
+    { id: 6, answers: ["subway","train","metro","underground","transit"],      url: "__WIX_URL_6__" },
+    { id: 7, answers: ["washer","washing machine","dishwasher","laundry","cycle"], url: "__WIX_URL_7__" },
+    { id: 8, answers: ["jet","plane","airplane","engine","flight","takeoff"],  url: "__WIX_URL_8__" }
+  ];
+
+  var WRONG_FEEDBACK = [
+    "No.", "Try again.", "Is that what you heard?", "Cold.",
+    "Not even close.", "Don't guess, listen.",
+    "Silence is better than that answer.", "Keep trying.",
+    "Incorrect.", "Focus."
+  ];
+
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = null;
+  var bufferCache = new Map();
+  var inflight = new Map();
+  var currentSource = null;
+  var currentNodes = [];
+  var levelIndex = 0;
+  var playing = false;
+  var gameOver = false;
+
+  var $card = document.getElementById("card");
+  var $play = document.getElementById("play");
+  var $submit = document.getElementById("submit");
+  var $guess = document.getElementById("guess");
+  var $feedback = document.getElementById("feedback");
+  var $level = document.getElementById("level");
+
+  function setFeedback(text, kind) {
+    if (!text) { $feedback.classList.remove("show"); return; }
+    $feedback.textContent = text;
+    $feedback.className = "feedback " + (kind || "neutral") + " show";
+  }
+
+  function setLevel(i) {
+    levelIndex = i;
+    $level.textContent = "LEVEL " + (i + 1) + " / " + LEVELS.length;
+    $guess.value = "";
+    setFeedback("", "neutral");
+    $card.classList.remove("success");
+    if (i + 1 < LEVELS.length) prefetch(LEVELS[i + 1]);
+  }
+
+  function getCtx() {
+    if (!ctx) ctx = new AC();
+    return ctx;
+  }
+
+  function prefetch(level) {
+    if (bufferCache.has(level.id) || inflight.has(level.id)) return;
+    if (!ctx) return;
+    loadBuffer(level);
+  }
+
+  function loadBuffer(level) {
+    if (bufferCache.has(level.id)) return Promise.resolve(bufferCache.get(level.id));
+    var pending = inflight.get(level.id);
+    if (pending) return pending;
+    var p = fetch(level.url)
+      .then(function (r) { return r.arrayBuffer(); })
+      .then(function (b) { return getCtx().decodeAudioData(b); })
+      .then(function (buf) {
+        bufferCache.set(level.id, buf);
+        inflight.delete(level.id);
+        return buf;
+      })
+      .catch(function (e) { inflight.delete(level.id); throw e; });
+    inflight.set(level.id, p);
+    return p;
+  }
+
+  function stopSound() {
+    if (currentSource) { try { currentSource.stop(); } catch (e) {} currentSource = null; }
+    currentNodes.forEach(function (n) { try { n.disconnect(); } catch (e) {} });
+    currentNodes = [];
+  }
+
+  async function ensureCtxResumed() {
+    var c = getCtx();
+    if (c.state === "suspended") await c.resume();
+    return c;
+  }
+
+  async function playLevel(level) {
+    if (playing) return;
+    playing = true;
+    $play.disabled = true;
+    $play.textContent = "Playing...";
+    setFeedback("Listening...", "neutral");
+    try {
+      var c = await ensureCtxResumed();
+      var buffer = await loadBuffer(level);
+      stopSound();
+      var now = c.currentTime;
+      var volume = Math.max(0.1, 0.5 - level.id * 0.05);
+      var duration = Math.max(2, 6 - level.id * 0.5);
+      var cutoff = Math.max(400, 20000 - level.id * 2400);
+      var master = c.createGain();
+      master.gain.setValueAtTime(volume, now);
+      master.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      master.connect(c.destination);
+      currentNodes.push(master);
+      var filter = c.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(cutoff, now);
+      filter.connect(master);
+      currentNodes.push(filter);
+      var src = c.createBufferSource();
+      src.buffer = buffer;
+      src.connect(filter);
+      currentSource = src;
+      src.start(now);
+      await new Promise(function (resolve) {
+        var done = false;
+        var finish = function () { if (done) return; done = true; stopSound(); resolve(); };
+        src.onended = finish;
+        setTimeout(finish, duration * 1000);
+      });
+    } catch (e) {
+      console.error("Audio error", e);
+    } finally {
+      playing = false;
+      $play.disabled = false;
+      $play.textContent = "Play sound";
+      if ($feedback.textContent === "Listening...") setFeedback("", "neutral");
+      setTimeout(function () { $guess.focus(); }, 100);
+    }
+  }
+
+  function normalize(s) {
+    return s.toLowerCase().trim().replace(/[.,\/#!$%^&*;:{}=\-_`~()]/g, "");
+  }
+
+  function checkAnswer() {
+    if (gameOver) return;
+    stopSound();
+    var raw = $guess.value;
+    if (!raw.trim()) return;
+    var guess = normalize(raw);
+    var level = LEVELS[levelIndex];
+    var correct = level.answers.some(function (a) { return a.toLowerCase() === guess; });
+    if (correct) {
+      $card.classList.add("success");
+      setFeedback("Correct.", "success");
+      setTimeout(function () {
+        if (levelIndex < LEVELS.length - 1) {
+          setLevel(levelIndex + 1);
+        } else {
+          gameOver = true;
+          setFeedback("Complete.", "success");
+          $play.disabled = true;
+          $submit.disabled = true;
+        }
+      }, 1000);
+    } else {
+      var msg = WRONG_FEEDBACK[Math.floor(Math.random() * WRONG_FEEDBACK.length)];
+      setFeedback(msg, "error");
+    }
+  }
+
+  $guess.addEventListener("input", function () { if ($guess.value.length > 0) stopSound(); });
+  $guess.addEventListener("keydown", function (e) { if (e.key === "Enter") checkAnswer(); });
+  $submit.addEventListener("click", checkAnswer);
+  $play.addEventListener("click", function () {
+    playLevel(LEVELS[levelIndex]);
+    if (levelIndex + 1 < LEVELS.length) prefetch(LEVELS[levelIndex + 1]);
+  });
+
+  setLevel(0);
+})();
+</script>
+</body>
+</html>
